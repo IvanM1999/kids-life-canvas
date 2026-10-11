@@ -24,8 +24,30 @@ body {
   background: linear-gradient(180deg, #f8f7ff 0%, #eef4ff 100%);
 }
 
-button {
+button,
+input,
+select,
+textarea {
   font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid rgba(17, 24, 39, 0.1);
+  border-radius: 12px;
+  padding: 11px 12px;
+  background: rgba(255, 255, 255, 0.66);
+  color: #111827;
+}
+
+textarea {
+  resize: vertical;
 }
 
 .app-shell {
@@ -81,7 +103,6 @@ button {
   color: rgba(255, 255, 255, 0.75);
   text-align: left;
   padding: 12px 14px;
-  cursor: pointer;
   transition: 0.2s ease;
 }
 
@@ -98,12 +119,35 @@ button {
   padding: 16px;
 }
 
+.compact-panel {
+  margin-top: 18px;
+}
+
 .section-label {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-weight: 700;
   color: #7a8193;
+}
+
+.filter-row {
+  margin-top: 12px;
+}
+
+.filter-pill {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+  padding: 8px 12px;
+}
+
+.filter-pill.selected,
+.child-card.selected {
+  background: rgba(124, 81, 255, 0.18);
+  border-color: rgba(124, 81, 255, 0.5);
 }
 
 .child-card {
@@ -114,7 +158,11 @@ button {
   margin-top: 14px;
   padding: 10px 8px;
   border-radius: 12px;
+  width: 100%;
   background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  text-align: left;
+  color: inherit;
 }
 
 .child-card strong,
@@ -171,13 +219,16 @@ button {
   border-radius: 12px;
   padding: 12px 16px;
   font-weight: 700;
-  cursor: pointer;
 }
 
 .primary-btn {
   background: linear-gradient(135deg, #7c51ff 0%, #5ec5ff 100%);
   color: white;
   box-shadow: 0 10px 24px rgba(124, 81, 255, 0.25);
+}
+
+.primary-btn.small {
+  padding: 10px 14px;
 }
 
 .ghost-btn {
@@ -217,7 +268,8 @@ button {
 }
 
 .content-grid,
-.lower-grid {
+.lower-grid,
+.composer-grid {
   display: grid;
   grid-template-columns: 1.6fr 0.95fr;
   gap: 18px;
@@ -302,6 +354,10 @@ button {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.search-row {
+  margin-bottom: 16px;
+}
+
 .timeline {
   display: grid;
   gap: 18px;
@@ -343,7 +399,10 @@ button {
 }
 
 .tag-row {
+  display: flex;
+  gap: 8px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .tag {
@@ -354,6 +413,10 @@ button {
   color: #4f46e5;
   font-size: 0.72rem;
   font-weight: 700;
+}
+
+.child-tag {
+  border: 1px solid rgba(17, 24, 39, 0.08);
 }
 
 .timeline-content p {
@@ -379,6 +442,45 @@ button {
   border: 1px solid rgba(17, 24, 39, 0.06);
 }
 
+.field-stack {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.form-panel {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.upload-card {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.upload-box {
+  display: grid;
+  gap: 6px;
+  padding: 18px 16px;
+  border-radius: 14px;
+  border: 1px dashed rgba(17, 24, 39, 0.15);
+  background: rgba(124, 81, 255, 0.03);
+}
+
+.upload-box span {
+  font-size: 1.7rem;
+}
+
+.upload-box strong,
+.upload-box small {
+  display: block;
+}
+
+.upload-box small {
+  color: #57657f;
+}
+
 @media (max-width: 980px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -390,6 +492,7 @@ button {
 
   .content-grid,
   .lower-grid,
+  .composer-grid,
   .stats-grid {
     grid-template-columns: 1fr;
   }
