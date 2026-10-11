@@ -5,9 +5,22 @@
   "workspaces": [
     "apps/*"
   ],
+  "type": "module",
+  "description": "Local-first, offline-capable digital canvas for tracking and documenting children's lives",
   "scripts": {
     "dev": "npm run dev --workspace apps/web",
     "build": "npm run build --workspace apps/web",
     "preview": "npm run preview --workspace apps/web"
-  }
+  },
+  "keywords": [
+    "family",
+    "memories",
+    "local-first",
+    "offline",
+    "children",
+    "timeline",
+    "album"
+  ],
+  "author": "Ivan Montibeller",
+  "license": "MIT"
 }
