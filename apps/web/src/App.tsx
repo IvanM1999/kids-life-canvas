@@ -4,7 +4,7 @@ import { AppState, Attachment, Child, loadState, Memory, saveState } from './sto
 
 type View = 'inicio' | 'timeline' | 'album' | 'canvas' | 'arquivo';
 type Draft = Omit<Memory, 'id'> & { id?: string };
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => { const date = new Date(); const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000); return local.toISOString().slice(0, 10); };
 const blankDraft = (childId: string): Draft => ({
   title: '', date: today(), tag: 'Primeiros dias', childId, description: '', attachments: [],
 });
@@ -264,7 +264,7 @@ function App() {
           <div className="canvas-copy"><span className="eyebrow">TUDO SE CONECTA</span><h3>O mapa da nossa<br />pequena grande história</h3><p>Toque em alguém para ver seus momentos; toque num tema para encontrá-lo no arquivo.</p><div className="canvas-key"><span><i className="key-person" /> pessoas</span><span><i className="key-theme" /> temas e capítulos</span></div></div>
           <div className="orbit" aria-label="Mapa interativo de memórias"><svg viewBox="0 0 640 450" role="presentation" className="orbit-lines"><ellipse cx="320" cy="225" rx="245" ry="155" /><ellipse cx="320" cy="225" rx="165" ry="105" transform="rotate(-24 320 225)" />{archive.children.map((person, index) => <line key={person.id} x1="320" y1="225" x2={index === 0 ? 125 : 520} y2={index === 0 ? 133 : 315} />)}</svg><button className="orbit-core" onClick={() => { setChildFilter('all'); setView('timeline'); }}><span>♡</span><small>nossa<br />família</small></button>
             {archive.children.map((person, index) => <button key={person.id} className={`orbit-person orbit-position-${index % 2}`} style={{ left: index % 2 === 0 ? '17%' : '81%', top: index % 2 === 0 ? '30%' : '69%', '--person-color': person.color } as CSSProperties} onClick={() => { setChildFilter(person.id); setView('timeline'); }}><span>{person.name.slice(0, 1)}</span><small>{person.name}</small></button>)}
-            {Array.from(new Set(archive.memories.map((item) => item.tag))).slice(0, 5).map((tag, index) => { const positions = [{ left: '49%', top: '13%' }, { left: '70%', top: '30%' }, { left: '67%', top: '82%' }, { left: '35%', top: '80%' }, { left: '29%', top: '49%' }]; return <button key={tag} className={`orbit-tag ${selectedOrbit === tag ? 'selected-orbit' : ''}`} style={positions[index]} onClick={() => { setTagFilter(tag); setView('timeline'); }}>{tag}<span>{archive.memories.filter((item) => item.tag === tag).length}</span></button>; })}
+            {Array.from(new Set(archive.memories.map((item) => item.tag))).slice(0, 5).map((tag, index) => { const positions = [{ left: '49%', top: '13%' }, { left: '70%', top: '30%' }, { left: '67%', top: '82%' }, { left: '35%', top: '80%' }, { left: '29%', top: '49%' }]; return <button key={tag} className={`orbit-tag ${selectedOrbit === tag ? 'selected-orbit' : ''}`} style={positions[index]} onClick={() => { setSelectedOrbit(tag); setTagFilter(tag); setView('timeline'); }}>{tag}<span>{archive.memories.filter((item) => item.tag === tag).length}</span></button>; })}
           </div>
           <div className="canvas-footer"><span>✦</span> Cada lembrança é um fio da nossa história.</div>
         </section>}
