@@ -16,6 +16,7 @@
 
 html, body, #root {
   margin: 0;
+  padding: 0;
   min-height: 100%;
   min-height: 100vh;
 }
@@ -48,6 +49,7 @@ textarea {
 
 textarea {
   resize: vertical;
+  font-family: inherit;
 }
 
 .app-shell {
@@ -61,6 +63,7 @@ textarea {
   color: #eff3ff;
   padding: 28px 18px;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-y: auto;
 }
 
 .brand-wrap {
@@ -87,6 +90,7 @@ textarea {
   place-items: center;
   background: linear-gradient(135deg, #8b5cf6 0%, #60a5fa 100%);
   font-weight: 800;
+  color: white;
 }
 
 .nav {
@@ -142,6 +146,7 @@ textarea {
   background: rgba(255, 255, 255, 0.03);
   color: #fff;
   padding: 8px 12px;
+  margin-bottom: 8px;
 }
 
 .filter-pill.selected,
@@ -179,6 +184,7 @@ textarea {
   height: 12px;
   border-radius: 50%;
   display: block;
+  flex-shrink: 0;
 }
 
 .pill {
@@ -186,10 +192,12 @@ textarea {
   border-radius: 999px;
   padding: 6px 8px;
   font-size: 0.72rem;
+  white-space: nowrap;
 }
 
 .main {
   padding: 30px;
+  overflow-y: auto;
 }
 
 .topbar {
@@ -219,6 +227,7 @@ textarea {
   border-radius: 12px;
   padding: 12px 16px;
   font-weight: 700;
+  transition: 0.2s ease;
 }
 
 .primary-btn {
@@ -229,11 +238,26 @@ textarea {
 
 .primary-btn.small {
   padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+.primary-btn:hover {
+  box-shadow: 0 15px 32px rgba(124, 81, 255, 0.35);
+  transform: translateY(-2px);
 }
 
 .ghost-btn {
   background: #eef2ff;
   color: #3c4d79;
+}
+
+.ghost-btn.small {
+  padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+.ghost-btn:hover {
+  background: #e0e7ff;
 }
 
 .stats-grid {
@@ -301,8 +325,7 @@ textarea {
   position: relative;
   height: 250px;
   border-radius: 18px;
-  background:
-    radial-gradient(circle at center, rgba(124, 81, 255, 0.14) 0%, rgba(115, 197, 255, 0.08) 30%, rgba(255,255,255,0.7) 100%);
+  background: radial-gradient(circle at center, rgba(124, 81, 255, 0.14) 0%, rgba(115, 197, 255, 0.08) 30%, rgba(255,255,255,0.7) 100%);
   border: 1px solid rgba(17, 24, 39, 0.06);
   overflow: hidden;
 }
@@ -335,6 +358,8 @@ textarea {
   font-size: 0.7rem;
   font-weight: 700;
   box-shadow: 0 15px 30px rgba(81, 100, 132, 0.14);
+  text-align: center;
+  padding: 8px;
 }
 
 .cloud-list {
@@ -361,6 +386,8 @@ textarea {
 .timeline {
   display: grid;
   gap: 18px;
+  max-height: 600px;
+  overflow-y: auto;
 }
 
 .timeline-item {
@@ -376,6 +403,7 @@ textarea {
   border-radius: 50%;
   background: linear-gradient(135deg, #7c51ff 0%, #5ec5ff 100%);
   margin-top: 8px;
+  flex-shrink: 0;
 }
 
 .timeline-content {
@@ -453,32 +481,23 @@ textarea {
   border: 1px solid rgba(17, 24, 39, 0.08);
 }
 
-.upload-card {
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: grid;
-  gap: 12px;
-  margin-top: 18px;
+  place-items: center;
+  z-index: 1000;
 }
 
-.upload-box {
-  display: grid;
-  gap: 6px;
-  padding: 18px 16px;
-  border-radius: 14px;
-  border: 1px dashed rgba(17, 24, 39, 0.15);
-  background: rgba(124, 81, 255, 0.03);
-}
-
-.upload-box span {
-  font-size: 1.7rem;
-}
-
-.upload-box strong,
-.upload-box small {
-  display: block;
-}
-
-.upload-box small {
-  color: #57657f;
+.modal-content {
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 @media (max-width: 980px) {
@@ -487,7 +506,7 @@ textarea {
   }
 
   .sidebar {
-    padding-bottom: 0;
+    padding-bottom: 20px;
   }
 
   .content-grid,

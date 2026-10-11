@@ -2,12 +2,23 @@
   "name": "kids-life-canvas",
   "private": true,
   "version": "0.1.0",
-  "workspaces": [
-    "apps/*"
-  ],
+  "type": "module",
+  "description": "Local-first, offline-capable digital canvas for tracking and documenting children's lives",
   "scripts": {
-    "dev": "npm run dev --workspace apps/web",
-    "build": "npm run build --workspace apps/web",
-    "preview": "npm run preview --workspace apps/web"
-  }
+    "dev": "cd apps/web && npm run dev",
+    "build": "cd apps/web && npm run build",
+    "preview": "cd apps/web && npm run preview",
+    "install:all": "npm install && cd apps/web && npm install"
+  },
+  "keywords": [
+    "family",
+    "memories",
+    "local-first",
+    "offline",
+    "children",
+    "timeline",
+    "album"
+  ],
+  "author": "Ivan Montibeller",
+  "license": "MIT"
 }
