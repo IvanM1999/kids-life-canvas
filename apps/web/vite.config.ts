@@ -12,5 +12,7 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 4173,
     strictPort: false,
+    // Explicitly allow the public Render host without permitting arbitrary hosts.
+    allowedHosts: ['kids-life-canvas.onrender.com'],
   },
 });
