@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "npm run dev --workspace apps/web",
     "build": "npm run build --workspace apps/web",
-    "preview": "npm run preview --workspace apps/web"
+    "preview": "npm run preview --workspace apps/web",
+    "start": "npm run preview --workspace apps/web -- --host 0.0.0.0 --port ${PORT:-4173}"
   },
   "keywords": [
     "family",
