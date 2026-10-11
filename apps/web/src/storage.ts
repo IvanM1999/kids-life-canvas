@@ -37,6 +37,11 @@ const DB_VERSION = 1;
 const STATE_KEY = 'archive';
 const LEGACY_KEY = 'kids-life-canvas-state';
 
+function localDateString(date = new Date()): string {
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 10);
+}
+
 export const defaultChildren: Child[] = [
   { id: 'baby-demo', name: 'Bebê', age: 'Chegou há pouco', color: '#c77962', mood: 'Nosso novo começo' },
 ];
@@ -45,7 +50,7 @@ export const defaultMemories: Memory[] = [
   {
     id: 'memory-welcome',
     title: 'O começo de tudo',
-    date: new Date().toISOString().slice(0, 10),
+    date: localDateString(),
     tag: 'Chegada',
     childId: 'baby-demo',
     description: 'Um dia que mudou o tamanho do nosso mundo. Aqui começa a história que vamos guardar juntos.',
@@ -54,7 +59,7 @@ export const defaultMemories: Memory[] = [
   {
     id: 'memory-first-hold',
     title: 'Um colo que virou casa',
-    date: new Date().toISOString().slice(0, 10),
+    date: localDateString(),
     tag: 'Família',
     childId: 'baby-demo',
     description: 'O primeiro encontro, os olhares demorados e a vontade de fazer o tempo ficar quietinho por um instante.',
@@ -63,7 +68,7 @@ export const defaultMemories: Memory[] = [
   {
     id: 'memory-little-details',
     title: 'Pequenos detalhes, amor imenso',
-    date: new Date().toISOString().slice(0, 10),
+    date: localDateString(),
     tag: 'Primeiros dias',
     childId: 'baby-demo',
     description: 'Mãozinhas, bocejos e cada novidade descoberta bem de pertinho. Um capítulo de cada vez.',
@@ -103,7 +108,7 @@ function normalizeState(value: Partial<AppState> | null | undefined): AppState {
     memories: memories.map((memory) => ({
       id: String(memory.id),
       title: String(memory.title ?? 'Lembrança'),
-      date: String(memory.date ?? new Date().toISOString().slice(0, 10)),
+      date: String(memory.date ?? localDateString()),
       tag: String(memory.tag ?? 'Família'),
       childId: String(memory.childId ?? children[0]?.id ?? 'baby-demo'),
       description: String(memory.description ?? ''),
