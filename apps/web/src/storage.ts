@@ -6,6 +6,17 @@ export type Child = {
   mood: string;
 };
 
+export type Attachment = {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  addedAt: string;
+  blob?: Blob;
+  link?: string;
+  local: boolean;
+};
+
 export type Memory = {
   id: string;
   title: string;
@@ -13,6 +24,7 @@ export type Memory = {
   tag: string;
   childId: string;
   description: string;
+  attachments: Attachment[];
 };
 
 export type AppState = {
@@ -20,72 +32,124 @@ export type AppState = {
   memories: Memory[];
 };
 
+const DB_NAME = 'kids-life-canvas';
+const DB_VERSION = 1;
+const STATE_KEY = 'archive';
+const LEGACY_KEY = 'kids-life-canvas-state';
+
 export const defaultChildren: Child[] = [
-  { id: 'child-1', name: 'Alice', age: '4 anos', color: '#9b8cff', mood: 'Curiosa' },
-  { id: 'child-2', name: 'Theo', age: '2 anos', color: '#59c3c3', mood: 'Brincalhão' },
+  { id: 'baby-demo', name: 'Bebê', age: 'Chegou há pouco', color: '#c77962', mood: 'Nosso novo começo' },
 ];
 
 export const defaultMemories: Memory[] = [
   {
-    id: 'memory-1',
-    title: 'Primeiro desenho na cozinha',
-    date: '2025-04-12',
-    tag: 'Casa',
-    childId: 'child-1',
-    description: 'Alice desenhou o sol e o cachorro com giz azul e pediu para colarmos na geladeira.',
+    id: 'memory-welcome',
+    title: 'O começo de tudo',
+    date: new Date().toISOString().slice(0, 10),
+    tag: 'Chegada',
+    childId: 'baby-demo',
+    description: 'Um dia que mudou o tamanho do nosso mundo. Aqui começa a história que vamos guardar juntos.',
+    attachments: [],
   },
   {
-    id: 'memory-2',
-    title: 'Primeiro passeio ao parque',
-    date: '2025-06-02',
-    tag: 'Parque',
-    childId: 'child-2',
-    description: 'Theo descobriu os balanços e ficou rindo durante todo o trajeto.',
+    id: 'memory-first-hold',
+    title: 'Um colo que virou casa',
+    date: new Date().toISOString().slice(0, 10),
+    tag: 'Família',
+    childId: 'baby-demo',
+    description: 'O primeiro encontro, os olhares demorados e a vontade de fazer o tempo ficar quietinho por um instante.',
+    attachments: [],
   },
   {
-    id: 'memory-3',
-    title: 'Aniversário da família',
-    date: '2025-07-18',
-    tag: 'Festa',
-    childId: 'child-1',
-    description: 'Momentos com bolo, velas e a família completa reunida em volta da mesa.',
-  },
-  {
-    id: 'memory-4',
-    title: 'Primeira palavra',
-    date: '2025-09-05',
-    tag: 'Marco',
-    childId: 'child-2',
-    description: 'Theo disse “mãmã” pela primeira vez ao ver a mãe chegando em casa.',
+    id: 'memory-little-details',
+    title: 'Pequenos detalhes, amor imenso',
+    date: new Date().toISOString().slice(0, 10),
+    tag: 'Primeiros dias',
+    childId: 'baby-demo',
+    description: 'Mãozinhas, bocejos e cada novidade descoberta bem de pertinho. Um capítulo de cada vez.',
+    attachments: [],
   },
 ];
 
-const STORAGE_KEY = 'kids-life-canvas-state';
-
-export function loadState(): AppState {
-  const raw = localStorage.getItem(STORAGE_KEY);
-
-  if (!raw) {
-    return {
-      children: defaultChildren,
-      memories: defaultMemories,
+function openDatabase(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    if (!('indexedDB' in window)) {
+      reject(new Error('Este navegador não oferece armazenamento local compatível.'));
+      return;
+    }
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains('state')) {
+        request.result.createObjectStore('state');
+      }
     };
-  }
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error ?? new Error('Não foi possível abrir o arquivo local.'));
+    request.onblocked = () => reject(new Error('Feche outras abas do Kids Life Canvas e tente novamente.'));
+  });
+}
 
+function normalizeState(value: Partial<AppState> | null | undefined): AppState {
+  const children = Array.isArray(value?.children) ? value.children : defaultChildren;
+  const memories = Array.isArray(value?.memories) ? value.memories : defaultMemories;
+  return {
+    children: children.map((child) => ({
+      id: String(child.id),
+      name: String(child.name ?? 'Bebê'),
+      age: String(child.age ?? ''),
+      color: String(child.color ?? '#c77962'),
+      mood: String(child.mood ?? 'Nossa história'),
+    })),
+    memories: memories.map((memory) => ({
+      id: String(memory.id),
+      title: String(memory.title ?? 'Lembrança'),
+      date: String(memory.date ?? new Date().toISOString().slice(0, 10)),
+      tag: String(memory.tag ?? 'Família'),
+      childId: String(memory.childId ?? children[0]?.id ?? 'baby-demo'),
+      description: String(memory.description ?? ''),
+      attachments: Array.isArray(memory.attachments) ? memory.attachments : [],
+    })),
+  };
+}
+
+/** IndexedDB is the durable, browser-local archive. Blob bytes are structured-cloned with records. */
+export async function loadState(): Promise<AppState> {
+  const db = await openDatabase();
   try {
-    const parsed = JSON.parse(raw) as Partial<AppState>;
-    return {
-      children: Array.isArray(parsed.children) && parsed.children.length ? parsed.children : defaultChildren,
-      memories: Array.isArray(parsed.memories) && parsed.memories.length ? parsed.memories : defaultMemories,
-    };
-  } catch {
-    return {
-      children: defaultChildren,
-      memories: defaultMemories,
-    };
+    const stored = await new Promise<Partial<AppState> | undefined>((resolve, reject) => {
+      const request = db.transaction('state', 'readonly').objectStore('state').get(STATE_KEY);
+      request.onsuccess = () => resolve(request.result as Partial<AppState> | undefined);
+      request.onerror = () => reject(request.error ?? new Error('Não foi possível ler o arquivo local.'));
+    });
+    if (stored) return normalizeState(stored);
+
+    // One-time migration from the previous localStorage prototype; preserve its records and add attachment metadata.
+    const legacy = localStorage.getItem(LEGACY_KEY);
+    if (legacy) {
+      const migrated = normalizeState(JSON.parse(legacy) as Partial<AppState>);
+      await saveState(migrated);
+      localStorage.removeItem(LEGACY_KEY);
+      return migrated;
+    }
+    const fresh = normalizeState({ children: defaultChildren, memories: defaultMemories });
+    await saveState(fresh);
+    return fresh;
+  } finally {
+    db.close();
   }
 }
 
-export function saveState(state: AppState) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+export async function saveState(state: AppState): Promise<void> {
+  const db = await openDatabase();
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction('state', 'readwrite');
+      transaction.objectStore('state').put(state, STATE_KEY);
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error ?? new Error('Não foi possível salvar no arquivo local.'));
+      transaction.onabort = () => reject(transaction.error ?? new Error('O salvamento foi cancelado pelo navegador.'));
+    });
+  } finally {
+    db.close();
+  }
 }

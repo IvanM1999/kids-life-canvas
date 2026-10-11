@@ -1,0 +1,10 @@
+{
+  "name": "Kids Life Canvas — nossas memórias",
+  "short_name": "Kids Life",
+  "description": "Um arquivo privado e local das histórias da família.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfaf7",
+  "theme_color": "#fbfaf7"
+}
